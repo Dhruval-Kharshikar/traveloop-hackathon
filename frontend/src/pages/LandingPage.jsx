@@ -1,8 +1,8 @@
 // src/pages/LandingPage.jsx
-
 import Navbar from "../components/Navbar"
 import RegionCard from "../components/RegionCard"
 import TripCard from "../components/TripCard"
+import { useNavigate } from "react-router-dom"
 
 import {
   FaSearch,
@@ -12,6 +12,7 @@ import {
 import { FiSliders } from "react-icons/fi"
 
 function LandingPage() {
+    const navigate = useNavigate()
 
   const regions = [
     {
@@ -311,25 +312,26 @@ function LandingPage() {
               </h2>
 
               {/* BUTTON */}
-              <button className="
-                h-14
-                px-7
-                rounded-[15px]
-                bg-black
-                text-white
-                flex
-                items-center
-                justify-center
-                gap-3
-                hover:bg-[#222]
-                transition-all
-              ">
+             <button
+                onClick={() => navigate("/create-trip")}
+                className="
+                    h-14
+                    px-7
+                    rounded-[15px]
+                    bg-black
+                    text-white
+                    flex
+                    items-center
+                    justify-center
+                    gap-3
+                    hover:bg-[#222]
+                    transition-all
+                "
+            >
 
                 <FaPlus />
-
                 Plan A Trip
-
-              </button>
+            </button>
 
             </div>
 
