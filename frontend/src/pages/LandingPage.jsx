@@ -1,20 +1,35 @@
-// src/pages/LandingPage.jsx
+import { useEffect, useState } from "react"
+
 import Navbar from "../components/Navbar"
 import RegionCard from "../components/RegionCard"
 import TripCard from "../components/TripCard"
+
 import { useNavigate } from "react-router-dom"
 
 import {
   FaSearch,
   FaPlus,
+  FaMapMarkedAlt,
 } from "react-icons/fa"
 
 import { FiSliders } from "react-icons/fi"
 
-function LandingPage() {
-    const navigate = useNavigate()
+import toast from "react-hot-toast"
 
-  const regions = [
+import Skeleton from "react-loading-skeleton"
+import "react-loading-skeleton/dist/skeleton.css"
+
+function LandingPage() {
+
+  const navigate = useNavigate()
+
+  const [loading, setLoading] = useState(true)
+
+  const [search, setSearch] = useState("")
+
+  const [user, setUser] = useState(null)
+
+  const [regions] = useState([
     {
       title: "Santorini",
       image:
@@ -38,9 +53,9 @@ function LandingPage() {
       image:
         "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop",
     },
-  ]
+  ])
 
-  const trips = [
+  const [trips] = useState([
     {
       title: "Kyoto Autumn Loop",
       days: "8 Days",
@@ -61,13 +76,55 @@ function LandingPage() {
       image:
         "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1200&auto=format&fit=crop",
     },
-  ]
+  ])
+
+  // FAKE BACKEND FETCH
+  useEffect(() => {
+
+    setTimeout(() => {
+
+      const storedUser =
+        JSON.parse(
+          localStorage.getItem(
+            "traveloop_user"
+          )
+        )
+
+      setUser(storedUser)
+
+      setLoading(false)
+
+    }, 1500)
+
+  }, [])
+
+  // SEARCH
+  const handleSearch = () => {
+
+    if (!search) {
+
+      toast.error(
+        "Please enter destination"
+      )
+
+      return
+    }
+
+    toast.success(
+      `Searching trips for "${search}"`
+    )
+  }
 
   return (
 
-    <div className="min-h-screen bg-[#f5f5f3] p-3 sm:p-5">
+    <div className="
+      min-h-screen
+      bg-[#f5f5f3]
+      p-3
+      sm:p-5
+    ">
 
-      {/* MAIN CONTAINER */}
+      {/* MAIN */}
       <div className="
         min-h-screen
         bg-white
@@ -80,20 +137,24 @@ function LandingPage() {
         {/* NAVBAR */}
         <Navbar />
 
-        {/* PAGE CONTENT */}
-        <div className="p-5 sm:p-8 lg:p-10">
+        {/* CONTENT */}
+        <div className="
+          p-5
+          sm:p-8
+          lg:p-10
+        ">
 
-          {/* HERO SECTION */}
+          {/* HERO */}
           <section className="
             relative
-            h-[300px]
-            sm:h-[400px]
-            lg:h-[500px]
+            h-[350px]
+            sm:h-[450px]
+            lg:h-[550px]
             rounded-[15px]
             overflow-hidden
           ">
 
-            {/* BACKGROUND IMAGE */}
+            {/* IMAGE */}
             <img
               src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2200&auto=format&fit=crop"
               alt="banner"
@@ -110,7 +171,7 @@ function LandingPage() {
             <div className="
               absolute
               inset-0
-              bg-black/40
+              bg-black/50
             "></div>
 
             {/* CONTENT */}
@@ -146,17 +207,34 @@ function LandingPage() {
                 leading-tight
                 max-w-5xl
               ">
-                Discover Beautiful
-                <br />
-                Places Around
-                <br />
-                The World.
+
+                
+
+                  <>
+                    Welcome Back,
+                    <br />
+                    Traveler
+                  </>
+
               </h1>
 
+              <p className="
+                text-white/80
+                text-lg
+                mt-6
+                max-w-2xl
+              ">
+                Discover premium experiences,
+                curated destinations, and
+                unforgettable journeys around
+                the world.
+              </p>
+
             </div>
+
           </section>
 
-          {/* SEARCH BAR */}
+          {/* SEARCH */}
           <div className="
             flex
             flex-col
@@ -165,7 +243,7 @@ function LandingPage() {
             mt-6
           ">
 
-            {/* SEARCH */}
+            {/* SEARCH BAR */}
             <div className="
               flex-1
               flex
@@ -184,6 +262,10 @@ function LandingPage() {
               <input
                 type="text"
                 placeholder="Search destinations, cities..."
+                value={search}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
                 className="
                   flex-1
                   bg-transparent
@@ -193,62 +275,127 @@ function LandingPage() {
 
             </div>
 
-            {/* FILTERS */}
-            <div className="flex gap-3 flex-wrap">
-
-              <button className="
+            {/* SEARCH BUTTON */}
+            <button
+              onClick={handleSearch}
+              className="
                 h-14
-                px-6
+                px-8
                 rounded-[15px]
-                bg-[#f7f7f5]
-                border
-                border-[#ececec]
-                hover:bg-[#efefef]
+                bg-black
+                text-white
+                hover:bg-[#222]
                 transition-all
-              ">
-                Group By
-              </button>
+              "
+            >
+              Search
+            </button>
 
-              <button className="
-                h-14
-                px-6
-                rounded-[15px]
-                bg-[#f7f7f5]
-                border
-                border-[#ececec]
-                hover:bg-[#efefef]
-                transition-all
-                flex
-                items-center
-                gap-3
-              ">
+            {/* FILTER */}
+            <button className="
+              h-14
+              px-6
+              rounded-[15px]
+              bg-[#f7f7f5]
+              border
+              border-[#ececec]
+              hover:bg-[#efefef]
+              transition-all
+              flex
+              items-center
+              gap-3
+            ">
 
-                <FiSliders />
+              <FiSliders />
 
-                Filter
+              Filter
 
-              </button>
+            </button>
 
-              <button className="
-                h-14
-                px-6
-                rounded-[15px]
-                bg-[#f7f7f5]
-                border
-                border-[#ececec]
-                hover:bg-[#efefef]
-                transition-all
-              ">
-                Sort By
-              </button>
-
-            </div>
           </div>
 
-          {/* TOP REGIONS */}
-          <section className="mt-14">
+          {/* AI RECOMMENDATION */}
+          <div className="
+            mt-8
+            bg-black
+            text-white
+            rounded-[15px]
+            p-6
+            flex
+            flex-col
+            lg:flex-row
+            lg:items-center
+            lg:justify-between
+            gap-5
+          ">
 
-            {/* TITLE */}
+            <div className="
+              flex
+              items-start
+              gap-4
+            ">
+
+              <div className="
+                w-14
+                h-14
+                rounded-[12px]
+                bg-white/10
+                flex
+                items-center
+                justify-center
+              ">
+
+                <FaMapMarkedAlt size={20} />
+
+              </div>
+
+              <div>
+
+                <p className="
+                  uppercase
+                  tracking-[4px]
+                  text-white/50
+                  text-xs
+                  mb-2
+                ">
+                  AI Recommendation
+                </p>
+
+                <h3 className="
+                  text-2xl
+                  font-semibold
+                ">
+                  Kyoto Is Trending This Week
+                </h3>
+
+              </div>
+
+            </div>
+
+            <button
+              onClick={() =>
+                toast.success(
+                  "AI itinerary generated"
+                )
+              }
+              className="
+                h-14
+                px-7
+                rounded-[15px]
+                bg-white
+                text-black
+                hover:bg-[#efefef]
+                transition-all
+              "
+            >
+              Generate AI Trip
+            </button>
+
+          </div>
+
+          {/* REGIONS */}
+          <section className="mt-16">
+
             <div className="
               flex
               items-center
@@ -275,20 +422,37 @@ function LandingPage() {
               gap-5
             ">
 
-              {regions.map((region, index) => (
+              {loading ? (
 
-                <RegionCard
-                  key={index}
-                  image={region.image}
-                  title={region.title}
-                />
+                [...Array(4)].map((_, index) => (
 
-              ))}
+                  <Skeleton
+                    key={index}
+                    height={220}
+                    borderRadius={15}
+                  />
+
+                ))
+
+              ) : (
+
+                regions.map((region, index) => (
+
+                  <RegionCard
+                    key={index}
+                    image={region.image}
+                    title={region.title}
+                  />
+
+                ))
+
+              )}
 
             </div>
+
           </section>
 
-          {/* PREVIOUS TRIPS */}
+          {/* TRIPS */}
           <section className="mt-16">
 
             {/* TOP */}
@@ -312,26 +476,39 @@ function LandingPage() {
               </h2>
 
               {/* BUTTON */}
-             <button
-                onClick={() => navigate("/create-trip")}
+              <button
+                onClick={() => {
+
+                  toast.success(
+                    "Opening Trip Planner"
+                  )
+
+                  setTimeout(() => {
+
+                    navigate("/create-trip")
+
+                  }, 800)
+                }}
                 className="
-                    h-14
-                    px-7
-                    rounded-[15px]
-                    bg-black
-                    text-white
-                    flex
-                    items-center
-                    justify-center
-                    gap-3
-                    hover:bg-[#222]
-                    transition-all
+                  h-14
+                  px-7
+                  rounded-[15px]
+                  bg-black
+                  text-white
+                  flex
+                  items-center
+                  justify-center
+                  gap-3
+                  hover:bg-[#222]
+                  transition-all
                 "
-            >
+              >
 
                 <FaPlus />
+
                 Plan A Trip
-            </button>
+
+              </button>
 
             </div>
 
@@ -342,22 +519,41 @@ function LandingPage() {
               gap-6
             ">
 
-              {trips.map((trip, index) => (
+              {loading ? (
 
-                <TripCard
-                  key={index}
-                  image={trip.image}
-                  title={trip.title}
-                  days={trip.days}
-                />
+                [...Array(3)].map((_, index) => (
 
-              ))}
+                  <Skeleton
+                    key={index}
+                    height={420}
+                    borderRadius={15}
+                  />
+
+                ))
+
+              ) : (
+
+                trips.map((trip, index) => (
+
+                  <TripCard
+                    key={index}
+                    image={trip.image}
+                    title={trip.title}
+                    days={trip.days}
+                  />
+
+                ))
+
+              )}
 
             </div>
+
           </section>
 
         </div>
+
       </div>
+
     </div>
   )
 }

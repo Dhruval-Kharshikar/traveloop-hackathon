@@ -1,27 +1,25 @@
 import { useEffect, useState } from "react"
 
 import Navbar from "../components/Navbar"
-import TripOverviewCard from "../components/TripOverviewCard"
+import CommunityPostCard from "../components/CommunityPostCard"
 
 import {
   FaSearch,
   FaPlus,
+  FaUsers,
+  FaFire,
 } from "react-icons/fa"
 
 import {
   FiSliders,
 } from "react-icons/fi"
 
-import { useNavigate } from "react-router-dom"
-
 import toast from "react-hot-toast"
 
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
 
-function UserTripListing() {
-
-  const navigate = useNavigate()
+function Community() {
 
   const [loading, setLoading] =
     useState(true)
@@ -29,87 +27,101 @@ function UserTripListing() {
   const [search, setSearch] =
     useState("")
 
-  const [allTrips, setAllTrips] =
+  const [posts, setPosts] =
     useState([])
 
-  // FETCH TRIPS
+  // FETCH POSTS
   useEffect(() => {
 
     setTimeout(() => {
 
-      // LOCAL STORAGE TRIPS
-      const storedTrips =
+      // USER
+      const user =
         JSON.parse(
           localStorage.getItem(
-            "traveloop_trips"
+            "traveloop_user"
           )
-        ) || []
+        )
 
-      // DUMMY BACKEND DATA
-      const defaultTrips = [
-        {
-          title:
-            "Bali Summer Escape",
-          location: "Indonesia",
-          days: "8 Days Journey",
-          status: "Ongoing",
-          image:
-            "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?q=80&w=1200&auto=format&fit=crop",
-        },
+      // USER GENERATED POST
+      const userPost = user
+        ? [
+            {
+              userName: user.name,
+              location:
+                "Your Latest Journey",
+              userImage:
+                "https://i.pravatar.cc/300?img=11",
+              postImage:
+                "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
+              caption:
+                "Just created my next luxury trip using AI itinerary planning. Excited for the journey ahead.",
+              likes: "128",
+              comments: "24",
+            },
+          ]
+        : []
 
+      // DUMMY FEED
+      const feedPosts = [
         {
-          title:
-            "Kyoto Autumn Loop",
-          location: "Japan",
-          days: "10 Days Journey",
-          status: "Upcoming",
-          image:
+          userName: "Alex Morgan",
+          location: "Kyoto, Japan",
+          userImage:
+            "https://i.pravatar.cc/300?img=12",
+          postImage:
             "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=1200&auto=format&fit=crop",
+          caption:
+            "Exploring Kyoto’s peaceful temples and hidden streets. One of the most beautiful travel experiences ever.",
+          likes: "2.4k",
+          comments: "320",
         },
 
         {
-          title:
-            "Santorini Luxury Tour",
-          location: "Greece",
-          days: "6 Days Journey",
-          status: "Completed",
-          image:
-            "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?q=80&w=1200&auto=format&fit=crop",
+          userName: "Sophia Carter",
+          location:
+            "Bali, Indonesia",
+          userImage:
+            "https://i.pravatar.cc/300?img=32",
+          postImage:
+            "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?q=80&w=1200&auto=format&fit=crop",
+          caption:
+            "Morning beach vibes, tropical cafés, and sunsets that honestly don’t look real.",
+          likes: "4.8k",
+          comments: "540",
         },
 
         {
-          title:
-            "Swiss Mountain Retreat",
+          userName: "James Wilson",
           location: "Switzerland",
-          days: "12 Days Journey",
-          status: "Completed",
-          image:
+          userImage:
+            "https://i.pravatar.cc/300?img=15",
+          postImage:
             "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop",
+          caption:
+            "Snowy mountains, fresh air, and the calmest place I’ve visited this year.",
+          likes: "3.1k",
+          comments: "410",
+        },
+
+        {
+          userName: "Emily Watson",
+          location:
+            "Santorini, Greece",
+          userImage:
+            "https://i.pravatar.cc/300?img=25",
+          postImage:
+            "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?q=80&w=1200&auto=format&fit=crop",
+          caption:
+            "Luxury sunsets and endless blue views across Santorini’s coastlines.",
+          likes: "5.2k",
+          comments: "710",
         },
       ]
 
-      // CONVERT USER CREATED TRIPS
-      const convertedTrips =
-        storedTrips.map((trip) => ({
-          title:
-            trip.destination +
-            " Adventure",
-
-          location:
-            trip.destination,
-
-          days:
-            "AI Planned Journey",
-
-          status: "Upcoming",
-
-          image:
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
-        }))
-
-      setAllTrips([
-        ...convertedTrips,
-        ...defaultTrips,
+      setPosts([
+        ...userPost,
+        ...feedPosts,
       ])
 
       setLoading(false)
@@ -118,34 +130,43 @@ function UserTripListing() {
 
   }, [])
 
-  // FILTERED TRIPS
-  const filteredTrips =
-    allTrips.filter((trip) =>
-      trip.title
+  // SEARCH POSTS
+  const filteredPosts =
+    posts.filter((post) =>
+      post.location
+        .toLowerCase()
+        .includes(
+          search.toLowerCase()
+        ) ||
+      post.caption
         .toLowerCase()
         .includes(
           search.toLowerCase()
         )
     )
 
-  // STATUS FILTERS
-  const ongoingTrips =
-    filteredTrips.filter(
-      (trip) =>
-        trip.status === "Ongoing"
+  // CREATE POST
+  const handleCreatePost = () => {
+
+    toast.loading(
+      "Uploading your travel memory...",
+      {
+        id: "upload-post",
+      }
     )
 
-  const upcomingTrips =
-    filteredTrips.filter(
-      (trip) =>
-        trip.status === "Upcoming"
-    )
+    setTimeout(() => {
 
-  const completedTrips =
-    filteredTrips.filter(
-      (trip) =>
-        trip.status === "Completed"
-    )
+      toast.dismiss(
+        "upload-post"
+      )
+
+      toast.success(
+        "Post uploaded successfully"
+      )
+
+    }, 1800)
+  }
 
   return (
 
@@ -169,7 +190,7 @@ function UserTripListing() {
         {/* NAVBAR */}
         <Navbar />
 
-        {/* CONTENT */}
+        {/* PAGE */}
         <div className="
           p-5
           sm:p-8
@@ -196,7 +217,7 @@ function UserTripListing() {
                 text-sm
                 mb-4
               ">
-                Smart Travel Dashboard
+                Travel Community
               </p>
 
               <h1 className="
@@ -205,27 +226,16 @@ function UserTripListing() {
                 font-semibold
                 text-[#111]
               ">
-                My Trip List
+                Community Feed
               </h1>
 
             </div>
 
-            {/* CREATE BUTTON */}
+            {/* CREATE POST */}
             <button
-              onClick={() => {
-
-                toast.success(
-                  "Opening AI Planner"
-                )
-
-                setTimeout(() => {
-
-                  navigate(
-                    "/create-trip"
-                  )
-
-                }, 900)
-              }}
+              onClick={
+                handleCreatePost
+              }
               className="
                 h-14
                 px-7
@@ -242,7 +252,7 @@ function UserTripListing() {
 
               <FaPlus />
 
-              Plan New Trip
+              Create Post
 
             </button>
 
@@ -277,7 +287,7 @@ function UserTripListing() {
 
               <input
                 type="text"
-                placeholder="Search your trips..."
+                placeholder="Search community posts..."
                 value={search}
                 onChange={(e) =>
                   setSearch(
@@ -350,7 +360,7 @@ function UserTripListing() {
 
           </div>
 
-          {/* AI SUMMARY */}
+          {/* AI COMMUNITY STATS */}
           <div className="
             mb-14
             bg-black
@@ -365,6 +375,7 @@ function UserTripListing() {
             gap-6
           ">
 
+            {/* LEFT */}
             <div>
 
               <p className="
@@ -374,18 +385,19 @@ function UserTripListing() {
                 text-xs
                 mb-2
               ">
-                AI Dashboard Summary
+                Community Insights
               </p>
 
               <h2 className="
                 text-3xl
                 font-semibold
               ">
-                {allTrips.length} Trips Found
+                Trending Destinations
               </h2>
 
             </div>
 
+            {/* STATS */}
             <div className="
               flex
               flex-wrap
@@ -397,21 +409,32 @@ function UserTripListing() {
                 px-5
                 py-4
                 rounded-[12px]
+                min-w-[120px]
               ">
 
-                <p className="
-                  text-white/50
-                  text-xs
-                  mb-1
+                <div className="
+                  flex
+                  items-center
+                  gap-3
+                  mb-2
                 ">
-                  Ongoing
-                </p>
+
+                  <FaUsers />
+
+                  <p className="
+                    text-white/50
+                    text-xs
+                  ">
+                    Travelers
+                  </p>
+
+                </div>
 
                 <h3 className="
                   text-2xl
                   font-semibold
                 ">
-                  {ongoingTrips.length}
+                  12K+
                 </h3>
 
               </div>
@@ -421,45 +444,32 @@ function UserTripListing() {
                 px-5
                 py-4
                 rounded-[12px]
+                min-w-[120px]
               ">
 
-                <p className="
-                  text-white/50
-                  text-xs
-                  mb-1
+                <div className="
+                  flex
+                  items-center
+                  gap-3
+                  mb-2
                 ">
-                  Upcoming
-                </p>
+
+                  <FaFire />
+
+                  <p className="
+                    text-white/50
+                    text-xs
+                  ">
+                    Trending
+                  </p>
+
+                </div>
 
                 <h3 className="
                   text-2xl
                   font-semibold
                 ">
-                  {upcomingTrips.length}
-                </h3>
-
-              </div>
-
-              <div className="
-                bg-white/10
-                px-5
-                py-4
-                rounded-[12px]
-              ">
-
-                <p className="
-                  text-white/50
-                  text-xs
-                  mb-1
-                ">
-                  Completed
-                </p>
-
-                <h3 className="
-                  text-2xl
-                  font-semibold
-                ">
-                  {completedTrips.length}
+                  Kyoto
                 </h3>
 
               </div>
@@ -468,103 +478,101 @@ function UserTripListing() {
 
           </div>
 
-          {/* SECTION COMPONENT */}
-          {[
-            {
-              title: "Ongoing",
-              trips: ongoingTrips,
-            },
+          {/* FEED */}
+          <section>
 
-            {
-              title: "Upcoming",
-              trips: upcomingTrips,
-            },
+            {/* TITLE */}
+            <div className="
+              flex
+              items-center
+              justify-between
+              mb-8
+            ">
 
-            {
-              title: "Completed",
-              trips: completedTrips,
-            },
-          ].map((section, index) => (
-
-            <section
-              key={index}
-              className="mb-16"
-            >
-
-              {/* TITLE */}
               <h2 className="
                 text-3xl
                 font-semibold
                 text-[#111]
-                mb-7
               ">
-                {section.title}
+                Community Timeline
               </h2>
 
-              {/* LIST */}
-              <div className="
-                space-y-6
-              ">
+            </div>
 
-                {loading ? (
+            {/* POSTS */}
+            <div className="
+              max-w-5xl
+              mx-auto
+              space-y-8
+            ">
 
-                  [...Array(2)].map(
-                    (_, index) => (
+              {loading ? (
 
-                      <Skeleton
-                        key={index}
-                        height={180}
-                        borderRadius={15}
-                      />
+                [...Array(4)].map(
+                  (_, index) => (
 
-                    )
+                    <Skeleton
+                      key={index}
+                      height={600}
+                      borderRadius={15}
+                    />
+
                   )
+                )
 
-                ) : section.trips
-                    .length > 0 ? (
+              ) : filteredPosts.length >
+                0 ? (
 
-                  section.trips.map(
-                    (trip, index) => (
+                filteredPosts.map(
+                  (post, index) => (
 
-                      <TripOverviewCard
-                        key={index}
-                        image={trip.image}
-                        title={trip.title}
-                        location={
-                          trip.location
-                        }
-                        days={trip.days}
-                        status={
-                          trip.status
-                        }
-                      />
+                    <CommunityPostCard
+                      key={index}
+                      userName={
+                        post.userName
+                      }
+                      location={
+                        post.location
+                      }
+                      userImage={
+                        post.userImage
+                      }
+                      postImage={
+                        post.postImage
+                      }
+                      caption={
+                        post.caption
+                      }
+                      likes={post.likes}
+                      comments={
+                        post.comments
+                      }
+                    />
 
-                    )
                   )
+                )
 
-                ) : (
+              ) : (
 
-                  <div className="
-                    h-[150px]
-                    rounded-[15px]
-                    border
-                    border-dashed
-                    border-[#dcdcdc]
-                    flex
-                    items-center
-                    justify-center
-                    text-gray-400
-                  ">
-                    No trips found
-                  </div>
+                <div className="
+                  h-[250px]
+                  rounded-[15px]
+                  border
+                  border-dashed
+                  border-[#dcdcdc]
+                  flex
+                  items-center
+                  justify-center
+                  text-gray-400
+                ">
+                  No community posts found
+                </div>
 
-                )}
+              )}
 
-              </div>
+            </div>
 
-            </section>
-
-          ))}
+          </section>
 
         </div>
 
@@ -574,4 +582,4 @@ function UserTripListing() {
   )
 }
 
-export default UserTripListing
+export default Community

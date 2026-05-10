@@ -159,7 +159,7 @@ function UserProfile() {
                       font-semibold
                       text-[#111]
                     ">
-                      Alex Morgan
+                      Alex Volkov
                     </h1>
 
                   </div>
@@ -266,7 +266,7 @@ function UserProfile() {
                     <FaMapMarkerAlt className="text-gray-400" />
 
                     <span className="text-[#111]">
-                      Ahmedabad, India
+                      Russia
                     </span>
 
                   </div>

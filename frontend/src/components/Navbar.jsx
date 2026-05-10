@@ -125,13 +125,20 @@ function Navbar() {
             My Trips
           </NavLink>
 
-          {/* PROFILE */}
           <NavLink
-            to="/profile"
+            to="/community"
             className={navLinkStyle}
-          >
-            Profile
-          </NavLink>
+        >
+            Community
+        </NavLink>
+
+        <NavLink
+        to="/packing-checklist"
+        className={navLinkStyle}
+        >
+        Checklist
+        </NavLink>
+        
 
         </div>
 
